@@ -14,14 +14,20 @@ Version 3.4.3 +
 #### Packages
 
 scikit-learn: http://scikit-learn.org/stable/
+
 Numpy: http://www.numpy.org/
+
 BeautifulSoup4: https://www.crummy.com/software/BeautifulSoup/
+
 Flask: http://flask.pocoo.org/
+
 lxml: http://lxml.de/
+
 PyDocX: https://pydocx.readthedocs.io/en/latest/
+
 requests: http://docs.python-requests.org/en/master/
 
-Recommend using pip3 (sudo possibly required)
+*Recommend using pip3 (sudo possibly required)*
 
 ### Web (HTML/CSS/JS)
 
@@ -34,5 +40,7 @@ mark.js: https://markjs.io/
 These components are not included and should be placed in the appropriate "static" directories:
 
 python/static/css
+
 python/static/js
+
 python/static/fonts (glyphicons go here)
