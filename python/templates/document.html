@@ -1,0 +1,223 @@
+{% extends "layout.html" %}
+{% block body %}
+
+    <!-- Begin page content -->
+    <div class="container">
+      <div class="row">
+
+        <!-- Main content start -->
+        <div class="col-md-8">
+
+          <!-- Top metadata panel -->
+          <div class="raised panel panel-unc">
+            <div class="panel-heading">
+              <h3 class="panel-title">Unclassified</h3>
+            </div>
+            <div class="panel-body">
+              <div class="container-fluid">
+                <div class="row">
+                  <div class="col-sm-11">
+                    <h1>{{ document["title"] }}</h1>
+                    <p>{{ document["date"] }}</p>
+                    <h3>From: A/S Jane Author - BUR</h3>
+                    <h3>For D - Chris Deputysecretary</h3>
+                  </div>
+                  <div class="col-sm-1 col-xs-12">
+
+                    <div class="btn-group-vertical hidden-xs push-right" role="group" aria-label="">
+                      <button type="button" class="btn btn-warning">
+                        <span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span>
+                      </button>
+                      <button type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-save" aria-hidden="true"></span>
+                      </button>
+                      <button type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                      </button>
+                    </div>
+
+                    <div class="btn-group btn-group-justified hidden-sm hidden-md hidden-lg" role="group" aria-label="">
+                      <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-warning">
+                          <span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span>
+                        </button>
+                      </div>
+                      <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-default">
+                          <span class="glyphicon glyphicon-save" aria-hidden="true"></span>
+                        </button>
+                      </div>
+                      <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-default">
+                          <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                        </button>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div> <!-- Top panel end -->
+          <div class="well">
+            <span>
+              <strong>Key terms: </strong>
+            </span>
+						{% for term in document["key_terms"] %}
+						<a href="{{ url_for('search', q=term) }}">{{ term }}</a>
+						{% endfor %}
+          </div>
+
+					<!-- container for document -->
+          <div id="document-container" class="sizer">
+          	{{ document["html"]|safe }}
+          </div>
+
+        </div> <!-- Main content end -->
+
+        <!-- Sidebar start -->
+        <div class="col-md-4">
+
+          <div class="raised panel panel-default">
+            <div class="panel-body">
+              <h4>Related Documents</h4>
+              <ul class="pretty-list">
+
+                {% for doc in related %}
+                <li>
+                  <a href="{{ url_for('document', doc_id=doc['id']) }}">
+                    <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+                    <strong>{{ doc["title"] }}</strong>
+                    <p>{{ doc["preview"] }}</p>
+                  </a>
+                </li>
+								{% endfor %}
+
+              </ul>
+            </div>
+          </div>
+
+          <div class="raised panel panel-default">
+            <div class="panel-body">
+              <h4>From the Web</h4>
+              <h5>Google News</h5>
+              <ul class="pretty-list">
+
+								{% for article in g_news %}
+                <li>
+                  <a href="{{ article['link'] }}">
+                    <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+                    <strong>{{ article["source"] }}</strong>
+                    <p>{{ article["title"] }} -<small>{{ article["pub_date"] }}</small></p>
+                  </a>
+                </li>
+								{% endfor %}
+
+              </ul>
+              <!-- <hr/>
+              <h5>Wikipedia</h5>
+              <ul class="pretty-list">
+
+                {% for article in wpedia %}
+                <li>
+                  <a href="{{ article['link'] }}">
+                    <span class="glyphicon glyphicon-book" aria-hidden="true"></span>
+                    <strong>{{ article["title"] }}</strong>
+                  </a>
+                </li>
+                {% endfor %}
+
+              </ul> -->
+            </div>
+          </div>
+
+          <div class="raised panel panel-default">
+            <div class="panel-body">
+              <h4>Issue Trends</h4>
+              <!-- <div class="ct-chart ct-major-tenth"></div>
+              <p>
+                <small>Based on the mention of <strong>{ trends["keyword"] }</strong> in this article</small>
+              </p> -->
+            </div>
+          </div>
+
+        </div> <!-- Sidebar end -->
+      </div>
+    </div>
+
+    <!-- Bottom sticky nav -->
+    <nav class="navbar navbar-default navbar-fixed-bottom">
+      <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button id="bottomnav-button" class="pull-left navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="glyphicon glyphicon-option-vertical" aria-hidden="true"></span>
+            <span>Document menu</span>
+          </button>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+
+            <li>
+              <div class="nav-btn-grp">
+
+                <button style="margin-right: 10px;" type="button" class="btn btn-default navbar-btn">
+                  <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
+                </button>
+
+                <button id="reducto" type="button" class="btn btn-circle navbar-btn">
+                  <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+                </button>
+                <span>Text Size</span>
+                <button id="maximus" type="button" class="btn btn-circle navbar-btn">
+                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                </button>
+
+              </div>
+            </li>
+          </ul>
+
+          <form class="navbar-form navbar-right" role="search">
+            <div class="form-group has-feedback has-clear">
+              <input name="keyword" type="text" class="form-control" placeholder="Search this document...">
+              <span class="form-control-clear glyphicon glyphicon-remove form-control-feedback hidden"></span>
+            </div>
+          </form>
+        </div><!-- /.navbar-collapse -->
+      </div><!-- /.container-fluid -->
+    </nav>
+
+    <!-- Chartist data -->
+    <script src="./chartist-js-develop/dist/chartist.min.js"></script>
+    <!--<script>
+    // Chart data
+      var data = {
+        // labels array
+        labels: { trends["labels"] },
+        // data array
+        series: [
+          { trends["data"] }
+        ]
+      };
+
+      var options = {
+        showPoint: false,
+        lineSmooth: false,
+        axisX: {
+          showGrid: false
+        },
+        axisY: {
+          showGrid: false,
+          showLabel: false
+        }
+      };
+      // Create a new line chart object
+      new Chartist.Line('.ct-chart', data, options);
+    </script> -->
+
+
+{% endblock %}

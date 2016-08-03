@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <title>Transition App</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+
+    <!-- Chartist CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='chartist-js-develop/dist/chartist.min.css') }}" />
+
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+
+  </head>
+
+  <body>
+
+    <!-- Top navbar -->
+    <nav id="main-nav" class="navbar navbar-inverse">
+      <div class="container">
+
+        <div class="navbar-header">
+
+          <button id="bottomnav" class="pull-left navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>
+            <span>Transition</span>
+          </button>
+        </div>
+
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Menu<span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li>Bureaus</li>
+                <li>Locations</li>
+                <li>Current Issues</li>
+                <li>Calendar</li>
+                <li>People</li>
+              </ul>
+            </li>
+          </ul>
+
+          <form class="navbar-form navbar-right" role="search" action="{{ url_for('search', q=q) }}">
+            <div class="form-group has-feedback has-clear">
+              <input name="q" type="text" class="form-control navbar-inverse" placeholder="Search everywhere...">
+              <span class="form-control-clear glyphicon glyphicon-remove form-control-feedback hidden"></span>
+            </div>
+          </form>
+
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    {% block body %}
+    {% endblock %}
+
+    <!-- Bootstrap core JavaScript ========================================= -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.mark.js') }}"></script>
+
+    <script>
+      // control input/search field behaviors
+      $('.has-clear input[type="text"]').on('input propertychange', function() {
+        var $this = $(this);
+        var visible = Boolean($this.val());
+        $this.siblings('.form-control-clear').toggleClass('hidden', !visible);
+      }).trigger('propertychange');
+
+      $('.form-control-clear').click(function() {
+        $(this).siblings('input[type="text"]').val('')
+          .trigger('propertychange').focus();
+        $("#document-container").unmark() // this creates a big - clearing the top search removes highlights
+      });
+    </script>
+
+
+
+    <script>
+      // mark.js variables
+      $(function() {
+
+        var mark = function() {
+
+          // Read the keyword
+          var keyword = $("input[name='keyword']").val();
+
+          // Determine selected options
+          // var options = {};
+          // $("input[name='opt[]']").each(function() {
+          //   options[$(this).val()] = $(this).is(":checked");
+          // });
+
+          // Remove previous marked elements and mark
+          // the new keyword inside the context
+          $("#document-container").unmark().mark(keyword);
+        };
+
+        $("input[name='keyword']").on("input", mark);
+
+      });
+    </script>
+
+    <script>
+
+      $("#maximus").click(function() {
+      		$('#document-container').find('*').each(function() {
+          	var fontSize = parseInt($(this).css("font-size"));
+          	fontSize = fontSize + 2 + "px";
+          	$(this).css({'font-size':fontSize});
+          });
+
+      });
+
+      $("#reducto").click(function() {
+      		$('#document-container').find('*').each(function() {
+          	var fontSize = parseInt($(this).css("font-size"));
+          	fontSize = fontSize - 2 + "px";
+          	$(this).css({'font-size':fontSize});
+           });
+      });
+
+    </script>
+
+  </body>
+</html>

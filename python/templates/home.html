@@ -1,0 +1,190 @@
+{% extends "layout.html" %}
+{% block body %}
+
+    <div class="container">
+
+      <!-- Splash start
+      <div class="row">
+        <div class="col-md-12">
+          <div class="alert alert-info alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h2>Convert Documents into Connected Content</h2>
+            <h1>
+            	<div class="row">
+            		<div class="col-sm-4 text-right">
+		              <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+		              &nbsp;
+		              <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+            		</div>
+            		<div class="col-sm-4 text-center">
+		              <div><span class="glyphicon glyphicon-stats" aria-hidden="true"></span></div>
+		              <div><small><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></small></div>
+		              <div><span class="glyphicon glyphicon-tags" aria-hidden="true"></span></div>
+		              <div><small><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></small></div>
+		              <div><span class="glyphicon glyphicon-link" aria-hidden="true"></span></div>
+            		</div>
+            		<div class="col-sm-4 text-left">
+		              <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+		              &nbsp;
+		              <span class="glyphicon glyphicon-phone" aria-hidden="true"></span>
+            		</div>
+            	</div>
+
+
+            </h1>
+          </div>
+        </div>
+      </div>-->
+
+
+      <div class="row">
+
+        <!-- Col 1 start -->
+        <div class="col-md-3">
+          <div class="row">
+
+            <div class="col-sm-6 col-md-12">
+              <div class="raised panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">Reading List</div>
+                <!-- List group -->
+                <ul class="list-group">
+                  <li class="list-group-item">
+                    <a class="pretty-link" href="#">
+                      <div>
+                        <span class="glyphicon glyphicon-certificate" aria-hidden="true"></span>
+                        New
+                        <span style="float: right;" class="badge">6</span>
+                      </div>
+                    </a>
+                  </li>
+                  <li class="list-group-item">
+                    <a class="pretty-link" href="#">
+                      <div>
+                        <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
+                        Unread
+                        <span style="float: right;" class="badge">12</span>
+                      </div>
+                    </a>
+                  </li>
+                  <li class="list-group-item">
+                    <a class="pretty-link" href="#">
+                      <div>
+                        <span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span>
+                        Bookmarks
+                        <span style="float: right;" class="badge">42</span>
+                      </div>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="col-sm-6 col-md-12">
+              <div class="raised panel panel-default">
+                <div class="panel-heading">Trending themes</div>
+                <ul class="pretty-list">
+                  {% for issue in issues %}
+                  <li><a href="{{ url_for('search', q=issue) }}">{{ issue }}</a></li>
+									{% endfor %}
+                </ul>
+              </div>
+            </div>
+
+            <div class="clearfix visible-sm-block"></div>
+
+            <div class="col-sm-12 col-md-12">
+              <div class="raised panel panel-default">
+                <div class="panel-heading">Featured Bureau</div>
+                <div class="panel-body">
+                  <p>
+                    <strong>BUR - </strong> Bureau of Bureau Affairs -
+                    Pasta ipsum dolor sit amet penne zita mezzi bombardoni farfalle pennoni mostaccioli capunti rotelle fusilli lunghi linguettine bucatini pennette spirali tripoline. Sorprese Lisce mezzani pasta mezzi bombardoni linguine mezzani pasta. Vermicelli tortiglioni fusilli lasagne gramigna.
+                  <a href="#">Read more...</a>
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+        </div><!-- Col 1 end -->
+
+        <!-- Col 2 start -->
+        <div class="col-md-9">
+
+          <div>
+            <h4>Recent Issue Documents</h4>
+            <ul class="pretty-list">
+
+ 							{% for document in issue_docs %}
+ 							<hr/>
+              <li>
+                <a href="{{ url_for('document', doc_id=document['id']) }}">
+                  <p>
+                  	<span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+                  	<strong>{{ document["title"] }}</strong>
+                  </p>
+                  <span>Jane Author</span>
+                  <strong>-</strong>
+                  <span>{{ document["preview"] }}</span>
+                  <span><small>{{ document["date"] }}</small></span>
+                </a>
+              </li>
+							{% endfor %}
+
+            </ul>
+          </div>
+
+          <br/>
+
+          <div>
+            <h4>Recent Country Reports</h4>
+            <ul class="pretty-list">
+
+            	{% for country in country_reports %}
+              <hr/>
+              <li>
+                <a href="{{ url_for('document', doc_id=country['id']) }}">
+                  <p>
+                  	<span class="glyphicon glyphicon-globe" aria-hidden="true"></span>
+                  	<strong>{{ country["title"] }}</strong>
+                  </p>
+                  <span>{{ country["preview"] }}</span>
+                  <span><small>{{ country["date"] }}</small></span>
+                </a>
+              </li>
+							{% endfor %}
+
+            </ul>
+          </div>
+
+          <br/>
+
+          <!-- <div class="row">
+
+            <div class="col-sm-12">
+              <h4>World Headlines</h4>
+              <p>via Reuters</p>
+            </div>
+
+						{% for article in news %}
+						<div class="panel panel-default">
+						  <div class="panel-body">
+						  	<h5>{{ article["title"] }}</h5>
+						    <p>{{ article["description"] }}</p>
+						    <p><small>{{ article["pub_date"] }}</small></p>
+						    <a class="btn btn-info pull-right" href="{{ article['link'] }}">Read</a>
+						  </div>
+						</div>
+						{% endfor %}
+
+          </div> -->
+
+        </div><!-- Col 2 end -->
+
+      </div>
+    </div>
+
+{% endblock %}

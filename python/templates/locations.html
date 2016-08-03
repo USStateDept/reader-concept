@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+{% block body %}
+
+    <!-- Begin page content -->
+    <div class="container">
+
+      <div class="row">
+
+        <!-- Col 1 start -->
+        <div class="col-md-3">
+          <div class="row">
+
+            <div class="col-sm-6 col-md-12">
+              <div class="raised panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">Policy articles</div>
+                <!-- List group -->
+                <ul class="list-group">
+                  <li class="list-group-item">
+                    <a href="#">New <span style="float: right;" class="badge">6</span></a>
+                  </li>
+                  <li class="list-group-item">
+                    <a href="#">Unread <span style="float: right;" class="badge">12</span></a>
+                  </li>
+                  <li class="list-group-item">
+                    <a href="#">All <span style="float: right;" class="badge">42</span></a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+
+            <div class="col-sm-6 col-md-12">
+              <div class="raised panel panel-default">
+                <div class="panel-heading">Trending themes</div>
+                <ul class="pretty-list">
+                  {% for issue in issues %}
+                  <li><a name="q" value="{{ issue }}" href="{{ url_for('search' }}">{{ issue }}</a></li>
+									{% endfor %}
+                </ul>
+              </div>
+            </div>
+
+            <div class="clearfix visible-sm-block"></div>
+
+            <div class="col-sm-12 col-md-12">
+              <div class="raised panel panel-default">
+                <div class="panel-heading">Featured Bureau</div>
+                <div class="panel-body">
+                  <p>
+                    <strong>BUR - </strong> Bureau of Bureau Affairs
+                    Pasta ipsum dolor sit amet penne zita mezzi bombardoni farfalle pennoni mostaccioli capunti rotelle fusilli lunghi linguettine bucatini pennette spirali tripoline. Sorprese Lisce mezzani pasta mezzi bombardoni linguine mezzani pasta. Vermicelli tortiglioni fusilli lasagne gramigna.
+                  <a href="#">Read more...</a>
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+        </div><!-- Col 1 end -->
+
+        <!-- Col 2 start -->
+        <div class="col-md-9">
+
+          <div id="location-splash" class="jumbotron">
+            <h1>Global Posts Map</h1>
+            <p>An interactive map of posts, color-coded by regional bureau.</p>
+            <p><a class="btn btn-primary btn-lg" target="_blank" href="http://oemviewer.a.state.gov/arcgis/apps/webappviewer/index.html?id=63c9918425694f6e90fdefcf005abcb1" role="button">Click to view</a></p>
+          </div>
+
+          <div>
+            <h4>Country reports</h4>
+            <ul class="pretty-list">
+
+              {% for country in coutries %}
+              <li>
+                <a href="{{ url_for('document', doc_id=country['id']) }}">
+                  <span class="glyphicon glyphicon-globe" aria-hidden="true"></span>
+                  <strong>{{ country["name"] }}</strong>
+                  <strong>-</strong>
+                  <span>{{ country["preview"] }}</span>
+                  <span><small>{{ country["pub_date"] }}</small></span>
+                </a>
+              </li>
+              {% endfor %}
+
+            </ul>
+          </div>
+
+        </div><!-- Col 2 end -->
+
+      </div>
+    </div>
+
+{% endblock %}

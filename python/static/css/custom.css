@@ -1,0 +1,203 @@
+
+/* for bottom nav */
+body { padding-bottom: 70px; }
+
+#main-nav {
+  border-radius: 0;
+}
+
+/* fix ios zoom on focus to search bug */
+input[type=”text”]:focus {
+font-size: 16px;
+}
+
+/* remove navbar toggle (button) borders*/
+.navbar-toggle{
+  border: 0;
+}
+
+
+/* Make bottom nav a 'pill-like' tab - takes up less real estate*/
+
+
+/* ************************************ */
+/* custom headings and paragraph labels */
+
+/* Unclassified */
+.panel-u > .panel-heading {
+  color:#fff;
+  background-color: #2980b9;
+  border-color: #2980b9;
+}
+
+.label-u {
+  background-color: #2980b9;
+  padding: .2em .6em;
+  margin-right: 5px;
+}
+
+
+/* SBU */
+.panel-sbu > .panel-heading {
+  color:#fff;
+  background-color: #5cb85c;
+  border-color: #5cb85c;
+}
+
+.label-sbu {
+  background-color: #5cb85c;
+  padding: .2em .6em;
+  margin-right: 5px;
+}
+
+/* Secret */
+.panel-s > .panel-heading {
+  color:#fff;
+  background-color: #c0392b;
+  border-color: #c0392b;
+}
+
+.label-s {
+  background-color: #c0392b;
+  padding: .2em .6em;
+  margin-right: 5px;
+}
+
+/* Noforn */
+.panel-noforn > .panel-heading {
+  color:#fff;
+  background-color: #f39c12;
+  border-color: #f39c12;
+}
+
+.label-noforn {
+  background-color: #f39c12;
+  padding: .2em .6em;
+  margin-right: 5px;
+}
+
+/* ************************************ */
+
+.navbar-inverse .navbar-header {
+  color: #fff;
+}
+
+#bottomnav-button {
+  margin-left: 15px;
+}
+
+.nav-btn-grp {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.btn-circle {
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 12px;
+  line-height: 1.42;
+  border-radius: 15px;
+  border: 1px solid;
+  border-color: #ccc;
+  color: #333;
+  background-color: #fff;
+}
+
+.btn-circle:hover, .btn-circle:focus {
+  color: #333;
+  text-decoration: none;
+  background-color: #e6e6e6;
+  border-color: #adadad;
+}
+
+/* too much negative space */
+.panel-body h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+}
+
+.pretty-link {
+  color: inherit;
+}
+
+/* Make link lists look nice */
+
+.pretty-list {
+  list-style: none;
+  padding-left: 10px;
+}
+
+.pretty-list li a {
+  color: inherit;
+}
+
+/*.pretty-list li a p {*/
+/*  margin-left: 18px;*/
+/*}*/
+
+.pretty-list hr {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+/* ******************* */
+
+.form-control.navbar-inverse:focus {
+  border-color: #9d9d9d;
+  color: #fff;
+}
+
+::-ms-clear {
+  display: none;
+}
+
+.form-control-clear {
+  z-index: 10;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.navbar-inverse .form-control-clear {
+  color:#fff;
+}
+
+.raised {
+  box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.15);
+}
+
+/* ************************************ */
+/* Minimal chartist CSS */
+
+.ct-series-a .ct-line {
+  /* Set the colour of this series line */
+  stroke: #000;
+  /* Control the thikness of your lines */
+  stroke-width: 2px;
+}
+
+.ct-label.ct-horizontal {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+/*.ct-series {*/
+/*  border-bottom: 2px solid black;*/
+/*}*/
+
+#document-container h1 h2 h3 h4 h5 h6 p {
+  font-size: inherit;
+}
+
+
+mark {
+  padding: 0;
+  background-color: #F7CA18;
+}
+
+.vertical-center {
+  position: relative;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
