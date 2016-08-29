@@ -5,16 +5,16 @@ create table document (
   id integer primary key autoincrement,
   uid text not null,
   u_date text not null,
-  doc_date text not null,
-  addressee text not null,
+  doc_date text,
+  addressee text,
   classification text not null,
-  category text not null,
+  category text,
   from_bur text not null,
   from_auth text not null,
   title text not null,
   full_text text not null,
   html text not null,
-  doc_path text not null,
+  file_name text not null,
   has_attachments integer not null,
   attach_urls text,
   approved_bur text,
@@ -60,4 +60,4 @@ create table user_actions (
   action text not null,
   rid text not null,
   datetime text not null
-)
+);

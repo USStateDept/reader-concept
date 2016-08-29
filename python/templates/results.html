@@ -13,22 +13,30 @@
             <div class="col-sm-6 col-md-12">
               <div class="raised panel panel-default">
                 <!-- Default panel contents -->
-                <div class="panel-heading">Policy articles</div>
+                <div class="panel-heading">Reading List</div>
                 <!-- List group -->
                 <ul class="list-group">
                   <li class="list-group-item">
-                    <a href="#">New <span style="float: right;" class="badge">6</span></a>
+                    <a class="pretty-link" href="#">
+                      <div>
+                        <span class="glyphicon glyphicon-certificate" aria-hidden="true"></span>
+                        New
+                        <span style="float: right;" class="badge">6</span>
+                      </div>
+                    </a>
                   </li>
                   <li class="list-group-item">
-                    <a href="#">Unread <span style="float: right;" class="badge">12</span></a>
-                  </li>
-                  <li class="list-group-item">
-                    <a href="#">All <span style="float: right;" class="badge">42</span></a>
+                    <a class="pretty-link" href="#">
+                      <div>
+                        <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
+                        Unread
+                        <span style="float: right;" class="badge">12</span>
+                      </div>
+                    </a>
                   </li>
                 </ul>
               </div>
             </div>
-
 
             <div class="col-sm-6 col-md-12">
               <div class="raised panel panel-default">
@@ -80,11 +88,11 @@
               <li>
                 <a href="{{ url_for('document', doc_id=result['id']) }}">
                   <p>
-                    <span class="glyphicon glyphicon-globe" aria-hidden="true"></span>
-                    <strong>{{ result["title"] }}</strong>
+                  	<span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+                  	<strong>{{ result["title"] }}</strong>
                   </p>
-                  <span>{{ result["preview"] }}</span>
-                  <span><small>{{ result["pub_date"] }}</small></span>
+                  <p><strong>{{ result["bur"] }} - {{ result["author"] }}</strong> <small>{{ result["date"] }}</small></p>
+                  <p>{{ result["preview"] }}</p>
                 </a>
               </li>
               {% endfor %}

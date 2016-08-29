@@ -9,46 +9,61 @@
         <div class="col-md-8">
 
           <!-- Top metadata panel -->
-          <div class="raised panel panel-unc">
+          {% if document["classification"] == "noforn" %}
+          <div class="raised panel panel-noforn">
+            <div class="panel-heading">
+              <h3 class="panel-title">Noforn</h3>
+            </div>
+          {% elif document["classification"] == "secret" %}
+          <div class="raised panel panel-s">
+            <div class="panel-heading">
+              <h3 class="panel-title">Secret</h3>
+            </div>
+          {% elif document["classification"] == "sensitive but unclassified" %}
+          <div class="raised panel panel-sbu">
+            <div class="panel-heading">
+              <h3 class="panel-title">Sensitive But Unclassified</h3>
+            </div>
+          {% elif document["classification"] == "unclassified" %}
+          <div class="raised panel panel-u">
             <div class="panel-heading">
               <h3 class="panel-title">Unclassified</h3>
             </div>
+          {% else %}
+          <div class="raised panel">
+            <div class="panel-heading">
+              <h3 class="panel-title">Uncategorized</h3>
+            </div>
+          {% endif %}
+
             <div class="panel-body">
               <div class="container-fluid">
                 <div class="row">
                   <div class="col-sm-11">
-                    <h1>{{ document["title"] }}</h1>
-                    <p>{{ document["date"] }}</p>
-                    <h3>From: A/S Jane Author - BUR</h3>
-                    <h3>For D - Chris Deputysecretary</h3>
+                    <h3>{{ document["title"] }}</h3>
+                    <p>{{ document["doc_date"] }}</p>
+                    <h4>From: {{ document["from_auth"] }} - {{ document["from_bur"] }}</h4>
+                    <h4>{{ document["category"] }} For {{ document["addressee"] }}</h4>
                   </div>
                   <div class="col-sm-1 col-xs-12">
 
                     <div class="btn-group-vertical hidden-xs push-right" role="group" aria-label="">
-                      <button type="button" class="btn btn-warning">
-                        <span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span>
-                      </button>
-                      <button type="button" class="btn btn-default">
+                      <a type="button" class="btn btn-default" href="../static/documents/{{ document['file_name'] }}" target="_blank">
                         <span class="glyphicon glyphicon-save" aria-hidden="true"></span>
-                      </button>
-                      <button type="button" class="btn btn-default">
+                      </a>
+                      <button type="button" class="btn btn-default" data-toggle="modal" data-target="#clearanceModal">
                         <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
                       </button>
                     </div>
 
                     <div class="btn-group btn-group-justified hidden-sm hidden-md hidden-lg" role="group" aria-label="">
                       <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-warning">
-                          <span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span>
-                        </button>
-                      </div>
-                      <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-default">
+                        <a type="button" class="btn btn-default" href="../static/documents/{{ document['file_name'] }}" target="_blank">
                           <span class="glyphicon glyphicon-save" aria-hidden="true"></span>
-                        </button>
+                        </a>
                       </div>
                       <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-default">
+                        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#clearanceModal">
                           <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
                         </button>
                       </div>
@@ -64,7 +79,7 @@
             <span>
               <strong>Key terms: </strong>
             </span>
-						{% for term in document["key_terms"] %}
+						{% for term in document["top_terms"] %}
 						<a href="{{ url_for('search', q=term) }}">{{ term }}</a>
 						{% endfor %}
           </div>
@@ -98,53 +113,87 @@
             </div>
           </div>
 
+					{% if bureaus|length > 0 %}
           <div class="raised panel panel-default">
             <div class="panel-body">
-              <h4>From the Web</h4>
-              <h5>Google News</h5>
+              <h4>Bureaus and Offices</h4>
+              <h5>Mentioned in this report</h5>
               <ul class="pretty-list">
 
-								{% for article in g_news %}
+								{% for b in bureaus %}
                 <li>
-                  <a href="{{ article['link'] }}">
-                    <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
-                    <strong>{{ article["source"] }}</strong>
-                    <p>{{ article["title"] }} -<small>{{ article["pub_date"] }}</small></p>
+                  <a href='{{ b["url"] }}' target="_blank">
+                    <span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>
+                    <strong>{{ b["name"] }}</strong>
                   </a>
                 </li>
 								{% endfor %}
 
               </ul>
-              <!-- <hr/>
-              <h5>Wikipedia</h5>
-              <ul class="pretty-list">
-
-                {% for article in wpedia %}
-                <li>
-                  <a href="{{ article['link'] }}">
-                    <span class="glyphicon glyphicon-book" aria-hidden="true"></span>
-                    <strong>{{ article["title"] }}</strong>
-                  </a>
-                </li>
-                {% endfor %}
-
-              </ul> -->
             </div>
           </div>
+					{% endif %}
 
+					{% if partners|length > 0 %}
           <div class="raised panel panel-default">
             <div class="panel-body">
-              <h4>Issue Trends</h4>
-              <!-- <div class="ct-chart ct-major-tenth"></div>
-              <p>
-                <small>Based on the mention of <strong>{ trends["keyword"] }</strong> in this article</small>
-              </p> -->
+              <h4>Partner Organizations</h4>
+              <h5>Mentioned in this report</h5>
+              <ul class="pretty-list">
+
+								{% for p in partners %}
+                <li>
+                  <a href="{{ p['url'] }}" target="_blank">
+                    <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+                    <strong>{{ p["name"] }}</strong>
+                  </a>
+                </li>
+								{% endfor %}
+
+              </ul>
             </div>
           </div>
+          {% endif %}
+
+          {% if countries|length > 0 %}
+          <div class="raised panel panel-default">
+            <div class="panel-body">
+              <h4>Countries</h4>
+              <h5>Mentioned in this report</h5>
+              <ul class="pretty-list">
+
+								{% for c in countries %}
+                <li>
+                  <a href="{{ c['url'] }}" target="_blank">
+                    <span class="glyphicon glyphicon-globe" aria-hidden="true"></span>
+                    <strong>{{ c["name"] }}</strong>
+                  </a>
+                </li>
+								{% endfor %}
+
+              </ul>
+            </div>
+          </div>
+          {% endif %}
 
         </div> <!-- Sidebar end -->
       </div>
     </div>
+
+		<!-- Clearance Information Modal -->
+		<div class="modal fade" id="clearanceModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title" id="myModalLabel">Clearance Information</h4>
+		      </div>
+		      <div class="modal-body">
+						This document does not have any clearance information.
+		      </div>
+		    </div>
+		  </div>
+		</div>
 
     <!-- Bottom sticky nav -->
     <nav class="navbar navbar-default navbar-fixed-bottom">
@@ -165,9 +214,9 @@
             <li>
               <div class="nav-btn-grp">
 
-                <button style="margin-right: 10px;" type="button" class="btn btn-default navbar-btn">
+                <!--<button style="margin-right: 10px;" type="button" class="btn btn-default navbar-btn">
                   <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
-                </button>
+                </button>-->
 
                 <button id="reducto" type="button" class="btn btn-circle navbar-btn">
                   <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
@@ -192,8 +241,8 @@
     </nav>
 
     <!-- Chartist data -->
-    <script src="./chartist-js-develop/dist/chartist.min.js"></script>
-    <!--<script>
+    <!--<script src="./chartist-js-develop/dist/chartist.min.js"></script>
+    <script>
     // Chart data
       var data = {
         // labels array

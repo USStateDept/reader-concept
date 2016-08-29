@@ -8,5 +8,7 @@ python/static/css/bootstrap**
 python/static/fonts/glyphicons**
 python/static/js/bootstrap**
 python/static/js/jquery**
+python/static/documents/**
+**.pyc
 **.docx
 sql/app.db

@@ -67,15 +67,6 @@
                       </div>
                     </a>
                   </li>
-                  <li class="list-group-item">
-                    <a class="pretty-link" href="#">
-                      <div>
-                        <span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span>
-                        Bookmarks
-                        <span style="float: right;" class="badge">42</span>
-                      </div>
-                    </a>
-                  </li>
                 </ul>
               </div>
             </div>
@@ -98,9 +89,12 @@
                 <div class="panel-heading">Featured Bureau</div>
                 <div class="panel-body">
                   <p>
-                    <strong>BUR - </strong> Bureau of Bureau Affairs -
-                    Pasta ipsum dolor sit amet penne zita mezzi bombardoni farfalle pennoni mostaccioli capunti rotelle fusilli lunghi linguettine bucatini pennette spirali tripoline. Sorprese Lisce mezzani pasta mezzi bombardoni linguine mezzani pasta. Vermicelli tortiglioni fusilli lasagne gramigna.
-                  <a href="#">Read more...</a>
+                    <strong>EUR: </strong>European and Eurasian Affairs.
+                    The Bureau of European and Eurasian Affairs is charged with
+                    implementing U.S. foreign policy and promoting U.S. interests
+                    in Europe and Eurasia (which it defines as being Europe,
+                    Turkey, Cyprus, the Caucasus Region, and Russia).
+                  <a href="http://prototype.mollymoran.com/eur/">Read more...</a>
                   </p>
                 </div>
 
@@ -115,7 +109,7 @@
         <div class="col-md-9">
 
           <div>
-            <h4>Recent Issue Documents</h4>
+            <h4>Recent Documents</h4>
             <ul class="pretty-list">
 
  							{% for document in issue_docs %}
@@ -126,33 +120,8 @@
                   	<span class="glyphicon glyphicon-file" aria-hidden="true"></span>
                   	<strong>{{ document["title"] }}</strong>
                   </p>
-                  <span>Jane Author</span>
-                  <strong>-</strong>
-                  <span>{{ document["preview"] }}</span>
-                  <span><small>{{ document["date"] }}</small></span>
-                </a>
-              </li>
-							{% endfor %}
-
-            </ul>
-          </div>
-
-          <br/>
-
-          <div>
-            <h4>Recent Country Reports</h4>
-            <ul class="pretty-list">
-
-            	{% for country in country_reports %}
-              <hr/>
-              <li>
-                <a href="{{ url_for('document', doc_id=country['id']) }}">
-                  <p>
-                  	<span class="glyphicon glyphicon-globe" aria-hidden="true"></span>
-                  	<strong>{{ country["title"] }}</strong>
-                  </p>
-                  <span>{{ country["preview"] }}</span>
-                  <span><small>{{ country["date"] }}</small></span>
+                  <p><strong>{{ document["bur"] }} - {{ document["author"] }}</strong> <small>{{ document["date"] }}</small></p>
+                  <p>{{ document["preview"] }}</p>
                 </a>
               </li>
 							{% endfor %}

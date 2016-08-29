@@ -6,7 +6,6 @@
 
 import json
 import re
-from pydocx import PyDocX
 from docx import Document
 from bs4 import BeautifulSoup
 from lxml import etree as et
@@ -20,13 +19,18 @@ import configparser
 ## CONSTANTS and VARIABLES
 ##
 
-logging.basicConfig(level=logging.DEBUG)
-
 config = configparser.ConfigParser()
 config.read("../data/default.ini")
 
+if config["DEFAULT"]["log_level"] == "debug":
+  logging.basicConfig(level=logging.DEBUG)
+else:
+  logging.basicConfig(level=logging.WARN)
+
 HTML_IDS = config["scraping"]["html_ids"].split(",")
 WRITE_DIR = config["DEFAULT"]["root_dir"] + config["scraping"]["write_dir"] + "/"
+CLASSIFICATIONS = config["DEFAULT"]["classifications"].split(",") # ["unclassified", "sensitive but unclassified", "confidential", "secret", "noforn"]
+PARA_MARKINGS = config["DEFAULT"]["para_markings"].split(",") # ["U", "SBU", "C", "S", "noforn"]
 
 # doc loading -
 country_doc = "../data/countries.json"
@@ -107,11 +111,31 @@ class Scrape2Docx(object):
 
           # this is the raw text content of the page
           self._html = BeautifulSoup(et.tostring(c_), 'html.parser')
-          self._text = self._html.get_text("\n")
-          logging.info("Length of extracted text: " + str(len(self._text)))
-          self._text_list = [ l for l in self._text.split("\n") if l != "" ]
+          self._full_text = self._html.get_text("\n")
+          logging.info("Length of extracted text: " + str(len(self._full_text)))
 
-  def docxify(self, header_len=75, sub_header_level=3, out_path=WRITE_DIR):
+          # create list of text components, labeled by type (h, p, etc.)
+          # and including the "(U)" paragraph marking
+          self._text_list = []
+          allowed_elems = ["h1", "h2", "h3", "h4", "h5", "h6", "p"] # "a" not currently supported by python-docx
+          for child in self._html.descendants:
+            if child.name in allowed_elems:
+              # if child.name == 'a':
+              #   if "href" in child.attrs:
+              #     link = child.attrs["href"]
+              #   else:
+              #     link = None
+              #   if child.get_text() != "" and ( link is not None and link != "#"):
+              #     print((child.name, child.get_text(), link))
+              # else:
+              if len(child.get_text()) > 1:
+                if child.name in allowed_elems[:6]:
+                  # all header elements converted to level 3 (h3)
+                  self._text_list.append(("h", 3, "(U) " + child.get_text()))
+                elif child.name == allowed_elems[6]:
+                  self._text_list.append(("p", "(U) " + child.get_text()))
+
+  def docxify(self, out_path=WRITE_DIR):
     file_name = re.split("/", self.url)[-1]
     if len(file_name) == 0:
       file_name = re.split("/", self.url)[-2]
@@ -121,13 +145,12 @@ class Scrape2Docx(object):
       logging.warn("_test_list does not exist!")
     else:
       self.document = Document()
-      self.document.add_heading(self._text_list[0])
-      for line in self._text_list[1:-1]:
-        if len(line) >= header_len:
-          # infer that item is a header
-          self.document.add_paragraph(line)
-        else:
-          self.document.add_heading(line, sub_header_level)
+      for text in self._text_list:
+        if text[0] == "h":
+          self.document.add_heading(text[2], level=text[1])
+        elif text[0] == "p":
+          self.document.add_paragraph(text[1])
+
       self.document.save(out_path + file_name + ".docx")
 
   def pipeline(self, url, html_ids):
@@ -142,3 +165,37 @@ class Scrape2Docx(object):
 if __name__ == '__main__':
   main()
 
+##
+## SCRATCH
+##
+
+# allowed_elems = ["h1", "h2", "h3", "h4", "h5", "h6", "p"] # "a" not currently supported by python-docx
+
+# doc_components = []
+
+# for child in doc._html.descendants:
+#   if child.name in allowed_elems:
+#     # if child.name == 'a':
+#     #   if "href" in child.attrs:
+#     #     link = child.attrs["href"]
+#     #   else:
+#     #     link = None
+#     #   if child.get_text() != "" and ( link is not None and link != "#"):
+#     #     print((child.name, child.get_text(), link))
+#     # else:
+#     if len(child.get_text()) > 0:
+#       if child.name in allowed_elems[:6]:
+#         # all header elements converted to level 3 (h3)
+#         doc_components.append(("h", 3, "(U) " + child.get_text()))
+#       elif child.name == allowed_elems[6]:
+#         doc_components.append(("p", "(U) " + child.get_text()))
+
+# document = Document()
+
+# for text in doc_components:
+#   if text[0] == "h":
+#     document.add_heading(text[2], level=text[1])
+#   elif text[0] == "p":
+#     document.add_paragraph(text[1])
+
+# document.save(file_name)

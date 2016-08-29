@@ -7,11 +7,13 @@
 import os
 import dbIO
 import sys
+import re
 from datetime import datetime
 import json
 import sqlite3
 import configparser
 import logging
+import urllib
 from time import sleep
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 from webapp_helper import preview, count_terms
@@ -35,6 +37,28 @@ USERNAME = config["webapp"]["default_usr"]
 PASSWORD = config["webapp"]["default_pwd"]
 
 db_handler = dbIO.SQLio()
+
+## lookup dictionary loading
+## for sidebar / related content
+countries = "../data/countries.json"
+with open(countries, "r") as d:
+  countries_dict = json.load(d)
+
+partners_names = "../data/partners_names.json"
+with open(partners_names, "r") as d:
+  part_names_dict = json.load(d)
+
+partners_urls = "../data/partners_urls.json"
+with open(partners_urls, "r") as d:
+  part_urls_dict = json.load(d)
+
+org_names = "../data/org_names.json"
+with open(org_names, "r") as d:
+  org_names_dict = json.load(d)
+
+org_urls = "../data/org_urls.json"
+with open(org_urls, "r") as d:
+  org_urls_dict = json.load(d)
 
 ##
 ## INIT FLASK
@@ -90,11 +114,15 @@ def home():
   '''Pulls docs and trends for the main page'''
 
   # grab most recent issue docs
-  cur = g.db.execute("""select uid, u_date, title, full_text
+  cur = g.db.execute("""select uid,
+                               doc_date,
+                               title,
+                               full_text,
+                               from_auth,
+                               from_bur
                         from document
-                        where category = 'bureaus'
-                        order by u_date desc
-                        limit 5; """)
+                        order by doc_date desc
+                        limit 10; """)
 
   docs = cur.fetchall()
 
@@ -105,35 +133,13 @@ def home():
       d_["id"] = result[0]
       d_["date"] = result[1]
       d_["title"] = result[2]
-      d_["preview"] = preview(result[3])
+      d_["preview"] = preview(result[3], length=50)
+      d_["author"] = result[4]
+      d_["bur"] = result[5]
       issue_docs.append(d_)
 
   else:
     pass
-
-  # grab most recent country docs
-  cur = g.db.execute("""select uid, u_date, title, full_text
-                        from document
-                        where category = 'countries'
-                        order by u_date desc
-                        limit 5; """)
-
-  docs = cur.fetchall()
-  country_docs = []
-  if docs != []:
-    for result in docs:
-      d_ = {}
-      d_["id"] = result[0]
-      d_["date"] = result[1]
-      d_["title"] = result[2]
-      d_["preview"] = preview(result[3])
-      country_docs.append(d_)
-
-  else:
-    pass
-
-  # rss feed from reuters
-  # to-do
 
   # top terms
   # order by == looking at most recent/trending
@@ -145,11 +151,18 @@ def home():
   terms = cur.fetchall()
   top_terms = count_terms(terms)
 
-  return render_template("home.html", issues=top_terms, issue_docs=issue_docs, country_reports=country_docs)
+  return render_template("home.html", issues=top_terms, issue_docs=issue_docs)
 
 
-@app.route('/search/<q>', methods=['GET', 'POST'])
-def search(q=""):
+@app.route('/search', methods=['GET'])
+def search():
+  q = request.args.get("q")
+  q = urllib.parse.quote_plus(q)
+  return redirect(url_for('results', q=q))
+
+
+@app.route('/results/<q>', methods=['GET'])
+def results(q):
   '''Display search results and documents connected to a given query'''
   # top terms
   # order by == looking at most recent/trending
@@ -162,8 +175,14 @@ def search(q=""):
   top_terms = count_terms(terms)
 
   # search results
-  query = "%" + q + "%" # for LIKE operation
-  cur = g.db.execute("""select uid, title, full_text
+  p = urllib.parse.unquote_plus(q)
+  query = "%" + p + "%" # for LIKE operation
+  cur = g.db.execute("""select uid,
+                               doc_date,
+                               title,
+                               full_text,
+                               from_auth,
+                               from_bur
                         from document
                         where full_text like ?
                         order by u_date desc
@@ -177,11 +196,14 @@ def search(q=""):
     for doc in docs:
       d_ = {}
       d_["id"] = doc[0]
-      d_["title"] = doc[1]
-      d_["preview"] = preview(doc[2])
+      d_["date"] = doc[1]
+      d_["title"] = doc[2]
+      d_["preview"] = preview(doc[3], length=50)
+      d_["author"] = doc[4]
+      d_["bur"] = doc[5]
       results.append(d_)
 
-  return render_template("search.html", issues=top_terms, results=results)
+  return render_template("results.html", issues=top_terms, results=results)
 
 
 @app.route('/document/<doc_id>', methods=['GET', 'POST'])
@@ -189,17 +211,35 @@ def document(doc_id):
   '''Viewer page for an individual document'''
 
   # document data
-  cur = g.db.execute("""select u_date, title, html, top_terms
+  cur = g.db.execute("""select classification,
+                               title,
+                               doc_date,
+                               from_auth,
+                               from_bur,
+                               category,
+                               addressee,
+                               file_name,
+                               html,
+                               full_text,
+                               top_terms
                         from document
                         where uid = ?; """, (doc_id,))
 
   doc = cur.fetchall()[0]
 
-  document = {}
-  document["date"] = doc[0]
-  document["title"] = doc[1]
-  document["html"] = doc[2]
-  document["key_terms"] = doc[3].split(",")
+  document = {
+    "classification": doc[0],
+    "title": doc[1],
+    "doc_date": doc[2],
+    "from_auth": doc[3],
+    "from_bur": doc[4],
+    "category": doc[5],
+    "addressee": doc[6],
+    "file_name": doc[7],
+    "html": doc[8],
+    "full_text": doc[9],
+    "top_terms": doc[10].split(",")
+  }
 
   # get related documents
   num = 3
@@ -223,13 +263,32 @@ def document(doc_id):
 
     related.append(d_)
 
-  # fetch google news
-  # to do
+  # check document text for known entities:
+  # bureaus and offices
+  bureaus = []
+  for b in org_names_dict:
+    if re.search("\W" + b + "\W", document["full_text"]):
+      logging.debug(org_names_dict[b] + ": " + org_urls_dict[b])
+      bureaus.append({ "name": org_names_dict[b], "url": org_urls_dict[b] })
 
-  # fetch google trends
-  # to do
+  # partner orgs
+  partners = []
+  for p in part_names_dict:
+    if re.search(p, document["full_text"]):
+      partners.append({ "name": part_names_dict[p], "url": part_urls_dict[p] })
 
-  return render_template("document.html", document=document, related=related )
+  # countries
+  countries = []
+  for c in countries_dict:
+    if re.search(c, document["full_text"]):
+      countries.append({ "name": c, "url": countries_dict[c] })
+
+  return render_template("document.html",
+                         document=document,
+                         related=related,
+                         bureaus=bureaus,
+                         partners=partners,
+                         countries=countries)
 
 
 ## ADMIN ROUTES

@@ -166,6 +166,9 @@ class DocSim(object):
         self.doc_sims.append((uid_1, uid_2, score))
 
 
+  def _frac_and_count(self, corupus_len):
+
+
   def get_top_terms(self, stops=STOPS, n_terms=3):
 
     # vecotrize using only 1-grams
@@ -173,7 +176,7 @@ class DocSim(object):
     tfidf = vectorizer.fit_transform(self.docs)
 
     # enumerate feature names, ie. the actual words
-    feature_names = vectorizer.get_feature_names()
+    self.feature_names = vectorizer.get_feature_names()
 
     # convert to dense array
     dense = tfidf.todense()
@@ -190,13 +193,15 @@ class DocSim(object):
       doc_features = []
 
       for f_ in phrase_scores:
-        fname = feature_names[f_[0]]
+        fname = self.feature_names[f_[0]]
         fscore = f_[1]
         doc_features.append((fscore, fname))
 
-      top_terms = sorted(doc_features, reverse=True)[:n_terms]
-      top_terms = ",".join([ x[1] for x in top_terms ])
-      self.features.append(top_terms)
+      terms = doc_features # [:n_terms]
+      # top_terms = ",".join([ x[1] for x in top_terms ])
+      self.features.append(terms)
+
+    self._frac_and_count(len(self.features))
 
 
   def write_to_db(self):

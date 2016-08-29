@@ -29,7 +29,7 @@ def preview(string, length=30):
     return string
 
 
-def count_terms(lst_of_csv, num_terms=5, offset=5):
+def count_terms(lst_of_csv, num_terms=5, offset=0):
   term_list = []
   for s_ in lst_of_csv:
     l_ = s_[0].split(",")
