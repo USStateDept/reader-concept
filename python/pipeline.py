@@ -5,7 +5,6 @@
 ##
 
 import configparser
-import docsim
 import dbIO
 import uuid
 import glob

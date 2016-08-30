@@ -165,11 +165,70 @@ class DocSim(object):
         score = cosine_similarity[i, j]
         self.doc_sims.append((uid_1, uid_2, score))
 
+  def _top_terms(self, lower_co, upper_co, length=3):
+    allowed_ngrams = []
+    for item in self.feature_scores:
+      if lower_co < self.feature_scores[item]["count"] < upper_co:
+        allowed_ngrams.append(item)
+    top_terms = []
+    for doc in self.features[:10]:
+      doc_terms = [ x[1] for x in doc if x[1] in allowed_ngrams][:length]
+      top_terms.append(doc_terms)
+    return top_terms
 
-  def _frac_and_count(self, corupus_len):
+  def filter_ngrams(self,
+                    lower_co=0,
+                    upper_co=0,
+                    review=False,
+                    test=False):
+    if lower_co == 0:
+      lower_co = int(len(self.features)*0.05)
+    if upper_co == 0:
+      upper_co = int(len(self.features)*0.5)
+    #
+    self.feature_scores = {}
+    for doc in self.features:
+      for feature in doc:
+        d_ = {"score": feature[0], "count": 1}
+        if feature[1] not in self.feature_scores.keys():
+          self.feature_scores[feature[1]] = d_
+        else:
+          self.feature_scores[feature[1]]["score"] += d_["score"]
+          self.feature_scores[feature[1]]["count"] += d_["count"]
+    if review:
+      count_dict = {}
+      for item in self.feature_scores:
+        if self.feature_scores[item]["count"] not in count_dict.keys():
+          count_dict[self.feature_scores[item]["count"]] = 1
+        else:
+          count_dict[self.feature_scores[item]["count"]] += 1
+      #
+      count_list = []
+      for item  in count_dict:
+        t_ = (item, count_dict[item])
+        count_list.append(t_)
+      #
+      count_list = sorted(count_list)
+      print("Doc count | # of n-grams")
+      for item in count_list:
+        if lower_co < item[0] < upper_co:
+          end = " **\n"
+        else:
+          end = "\n"
+        print(str(item[0]) + " | " + str(item[1]), end=end)
+    #
+    if test:
+      terms_lst = self._top_terms(lower_co, upper_co)
+      for t_ in terms_lst:
+        print(",".join(t_))
+    #
+    if review or test:
+      return
+    else:
+      terms_lst = self._top_terms(lower_co, upper_co)
+      self.top_terms = [",".join(t_) for t_ in terms_lst]
 
-
-  def get_top_terms(self, stops=STOPS, n_terms=3):
+  def get_top_terms(self, stops=STOPS):
 
     # vecotrize using only 1-grams
     vectorizer = TfidfVectorizer(stop_words=stops, ngram_range=(1,3))
@@ -197,11 +256,10 @@ class DocSim(object):
         fscore = f_[1]
         doc_features.append((fscore, fname))
 
-      terms = doc_features # [:n_terms]
+      top_terms = sorted(doc_features, reverse=True) #[:n_terms]
       # top_terms = ",".join([ x[1] for x in top_terms ])
-      self.features.append(terms)
+      self.features.append(top_terms)
 
-    self._frac_and_count(len(self.features))
 
 
   def write_to_db(self):
@@ -215,7 +273,7 @@ class DocSim(object):
     db_.conn.commit()
 
     # then, top_terms
-    lst = list(zip(self.features, self.keys))
+    lst = list(zip(self.top_terms, self.keys))
     for item in lst:
       db_.cur.execute("update document set top_terms = ? where uid = ?;", item )
     db_.conn.commit()

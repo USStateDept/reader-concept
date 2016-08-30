@@ -3,6 +3,7 @@ scratch/**
 .DS_Store
 data/default.ini
 python/__pycache__/**
+python/_scratch.py
 python/static/chartist-js-develop/**
 python/static/css/bootstrap**
 python/static/fonts/glyphicons**
